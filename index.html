@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> Vue.js </title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<body>
+
+	<div id="app" class="container">
+		<h1> Helados </h1>
+		<h2> Lista </h2>
+		<ul>
+			<li v-for="item in helados">
+				<component-helado v-bind:helado="item"></component-helado>
+			</li>
+		</ul>
+		<h2> Seleccionados </h2>
+		<ul>
+			<li v-for="item in helados" v-if="item.seleccionado">
+				{{ item.sabor }}
+			</li>
+		</ul>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<script>
+
+		Vue.component('component-helado', {
+			props: ['helado'],
+			template: `
+				<div>					
+					<button class="btn btn-success" v-on:click="agregar(helado)" v-if="!helado.seleccionado"> + </button>
+					<button class="btn btn-danger" v-on:click="eliminar(helado)" v-if="helado.seleccionado"> - </button>
+					<span> {{ helado.sabor }} </span>
+					<hr />
+				</div>
+			`,
+			methods: {
+				agregar: function(p_helado){
+					p_helado.seleccionado = true;
+				},
+				eliminar: function(p_helado){
+					p_helado.seleccionado = false;
+				}
+			}
+		})
+
+		new Vue({
+			el: '#app',
+			data: {
+				helados: []
+			},
+			created: function(){
+				var that = this;
+				axios.get('lista.php')
+				.then(function (response) {
+					that.helados = response.data;
+				})
+				.catch(function (error) {
+					console.log(alert('Error: ' + error));
+				});
+			}
+		});
+
+	</script>
+
+</body>
+</html>
